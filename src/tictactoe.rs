@@ -3,11 +3,12 @@ use crate::movegenerator::MoveGenerator;
 use crate::oracle::Oracle;
 use crate::player::Player;
 use crate::r#move::Move;
+use crate::tictactoe::Piece::O;
 
 #[derive(Copy, Clone)]
 pub struct TicTacToeGame {
     pub board: [Option<Piece>; 9],
-    pub last_player: u8,
+    pub last_player: usize,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -34,24 +35,29 @@ impl Move for TicTacToeMove {
 }
 
 pub struct TicTacToePlayer {
+    pub move_generator: TicTacToeMoveGenerator
 }
 
 impl Player<TicTacToeGame, TicTacToeMove> for TicTacToePlayer {
-    fn pick_move(&self, game: &TicTacToeGame) -> TicTacToeMove {
-        todo!()
+    fn pick_move(&self, game: &TicTacToeGame) -> Option<TicTacToeMove> {
+        self.move_generator.get_moves(game).pop()
     }
 }
 
 pub struct TicTacToeMoveGenerator {
-    piece: Piece
+    pub piece: Piece
 }
 
 pub struct TicTacToeOracle {
 }
 
 impl Oracle<TicTacToeGame, TicTacToeMove, TicTacToePlayer> for TicTacToeOracle {
-    fn next_player(&self, game: &TicTacToeGame) -> &TicTacToePlayer {
-        todo!()
+    fn next_player(&self, game: &TicTacToeGame) -> Option<usize> {
+        match game.last_player {
+            0 => Some(1),
+            1 => Some(0),
+            _ => None
+        }
     }
 
     fn is_terminal(&self, game: &TicTacToeGame) -> bool {

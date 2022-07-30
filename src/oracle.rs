@@ -10,7 +10,10 @@ pub trait Oracle<GameType, MoveType, PlayerType>
           MoveType: Move,
           PlayerType: Player<GameType, MoveType>
 {
-    fn next_player(&self, game: &GameType) -> &PlayerType;
+    /// Returns the index of the next player who should play, if it can be uniquely determined.
+    /// If for some reason the oracle can't uniquely determine the next player (e.g., because the position is terminal),
+    /// it may return None.
+    fn next_player(&self, game: &GameType) -> Option<usize>;
 
     /**
      * Whether the game state represents a terminal position.

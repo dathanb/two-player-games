@@ -10,12 +10,6 @@ pub trait Game<GameType, MoveType>: Copy {
      * @return The new game state resulting from applying the move to the current game state.
      */
     // GameType apply(MoveType move);
-    fn apply(&self, m: MoveType) -> GameType;
+    fn apply(&self, m: &MoveType) -> GameType;
 
-    /**
-     * Whether the game state represents a terminal position.
-     * @return true if the game state is a terminal (play should not continue afterward);
-     *         false if the game state is an intermediate position (play should continue from this state)
-     */
-    fn is_terminal(&self) -> bool;
 }

@@ -50,7 +50,7 @@ pub trait PositionEvaluator<GameType, MoveType>
 
     /// Evaluate a position. This evaluation should incorporate only the position itself, and not attempt to
     /// analyze transitive positions.
-    fn evaluate(position: GameType) -> PositionEvaluation;
+    fn evaluate(&self, position: &GameType) -> PositionEvaluation;
 }
 
 #[cfg(test)]

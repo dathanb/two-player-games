@@ -33,7 +33,7 @@ pub struct MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGenera
           MoveGeneratorType: MoveGenerator<GameType, MoveType>
 
 {
-    phantom_game: PhantomData<GameType>,
+    game: GameType,
     phantom_move: PhantomData<MoveType>,
     position_evaluator: PositionEvaluatorType,
     move_generator: MoveGeneratorType,
@@ -47,6 +47,16 @@ for MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType
           MoveGeneratorType: MoveGenerator<GameType, MoveType> {
     fn choose_move(&self, game: GameType) -> MoveType {
         let moves = self.move_generator.get_moves(&game);
-        todo!()
+        let mut best_move = moves[0];
+        let mut best_position_evaluation = self.position_evaluator.evaluate(&self.game.apply(&moves[0]));
+        for r#move in moves {
+            let new_position = self.game.apply(&r#move);
+            let new_position_evaluation = self.position_evaluator.evaluate(&self.game.apply(&r#move));
+            if new_position_evaluation > best_position_evaluation {
+                best_position_evaluation = new_position_evaluation;
+                best_move = r#move;
+            }
+        }
+        best_move
     }
 }

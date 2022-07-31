@@ -27,6 +27,7 @@ impl Game<TicTacToeGame, TicTacToeMove> for TicTacToeGame {
 
 }
 
+#[derive(Copy, Clone)]
 pub struct TicTacToeMove {
     pub position: usize,
     pub piece: Piece,

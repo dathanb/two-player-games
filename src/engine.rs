@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use crate::game::Game;
 use crate::oracle::Oracle;
 use crate::player::Player;
@@ -5,7 +6,7 @@ use crate::r#move::Move;
 use crate::TicTacToeOracle;
 
 pub struct GameEngine<GameType, MoveType, PlayerType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+    where GameType: Game<GameType, MoveType> + Debug,
           MoveType: Move,
           PlayerType: Player<GameType, MoveType>,
           OracleType: Oracle<GameType, MoveType, PlayerType>
@@ -20,7 +21,7 @@ pub struct GameEngine<GameType, MoveType, PlayerType, OracleType>
 }
 
 impl<GameType, MoveType, PlayerType, OracleType> GameEngine<GameType, MoveType, PlayerType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+    where GameType: Game<GameType, MoveType> + Debug,
           MoveType: Move,
           PlayerType: Player<GameType, MoveType>,
           OracleType: Oracle<GameType, MoveType, PlayerType>
@@ -37,17 +38,21 @@ impl<GameType, MoveType, PlayerType, OracleType> GameEngine<GameType, MoveType, 
     }
 
     pub fn run(&mut self) {
-        let next_player = match self.oracle.next_player(&self.current_game_state) {
-            Some(0) => &self.player_x,
-            Some(1) => &self.player_o,
-            _ => return
-        };
+        while !self.oracle.is_terminal(&self.current_game_state) {
 
-        let next_move = match next_player.pick_move(&self.current_game_state) {
-            Some(x) => x,
-            None => return
-        };
-        self.current_game_state = self.current_game_state.apply(&next_move);
-        self.moves.push(next_move);
+            let next_player = match self.oracle.next_player(&self.current_game_state) {
+                Some(0) => &self.player_x,
+                Some(1) => &self.player_o,
+                _ => return
+            };
+
+            let next_move = match next_player.pick_move(&self.current_game_state) {
+                Some(x) => x,
+                None => return
+            };
+            self.current_game_state = self.current_game_state.apply(&next_move);
+            println!("{:?}", self.current_game_state);
+            self.moves.push(next_move);
+        }
     }
 }

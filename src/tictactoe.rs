@@ -5,7 +5,7 @@ use crate::player::Player;
 use crate::r#move::Move;
 use crate::tictactoe::Piece::O;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct TicTacToeGame {
     pub board: [Option<Piece>; 9],
     pub last_player: usize,
@@ -21,6 +21,7 @@ impl Game<TicTacToeGame, TicTacToeMove> for TicTacToeGame {
     fn apply(&self, m: &TicTacToeMove) -> TicTacToeGame {
         let mut new_position = *self;
         new_position.board[m.position] = Some(m.piece);
+        new_position.last_player = (new_position.last_player + 1) % 2;
         new_position
     }
 

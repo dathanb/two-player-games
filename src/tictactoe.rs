@@ -68,6 +68,18 @@ impl Oracle<TicTacToeGame, TicTacToeMove, TicTacToePlayer> for TicTacToeOracle {
                 && game.board[x].unwrap() == game.board[y].unwrap() && game.board[y].unwrap() == game.board[z].unwrap()
         };
 
+        let is_cat_game = || {
+            game.board[0].is_some()
+                && game.board[1].is_some()
+                && game.board[2].is_some()
+                && game.board[3].is_some()
+                && game.board[4].is_some()
+                && game.board[5].is_some()
+                && game.board[6].is_some()
+                && game.board[7].is_some()
+                && game.board[8].is_some()
+        };
+
         return is_three_in_a_row(0, 1, 2)
             || is_three_in_a_row(3, 4, 5)
             || is_three_in_a_row(6, 7, 8)
@@ -75,7 +87,8 @@ impl Oracle<TicTacToeGame, TicTacToeMove, TicTacToePlayer> for TicTacToeOracle {
             || is_three_in_a_row(1, 4, 7)
             || is_three_in_a_row(2, 5, 8)
             || is_three_in_a_row(0, 4, 8)
-            || is_three_in_a_row(2, 4, 6);
+            || is_three_in_a_row(2, 4, 6)
+            || is_cat_game();
     }
 }
 
@@ -96,7 +109,7 @@ impl MoveGenerator<TicTacToeGame, TicTacToeMove> for TicTacToeMoveGenerator {
 
 #[cfg(test)]
 mod tests {
-    use crate::{TicTacToeGame, TicTacToeMove, TicTacToeOracle, TicTacToePlayer, X};
+    use crate::{Piece, TicTacToeGame, TicTacToeMove, TicTacToeOracle, TicTacToePlayer, X};
     use crate::game::Game;
     use crate::oracle::Oracle;
 
@@ -194,6 +207,15 @@ mod tests {
         // -----------
         //  X |   |
         game.board = [None, None, Some(X), None, Some(X), None, Some(X), None, None];
+        assert!(oracle.is_terminal(&game));
+
+        // cat game
+        //  X | O | X
+        // -----------
+        //  X | O | O
+        // -----------
+        //  O | X | O
+        game.board = [Some(X), Some(Piece::O), Some(X), Some(X), Some(Piece::O), Some(Piece::O), Some(Piece::O), Some(X), Some(Piece::O)];
         assert!(oracle.is_terminal(&game));
     }
 }

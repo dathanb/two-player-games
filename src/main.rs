@@ -9,6 +9,8 @@ mod engine;
 mod game;
 mod tictactoe;
 mod oracle;
+mod movestrategy;
+mod positionevaluator;
 
 fn main() {
     let player1 = TicTacToePlayer {move_generator: TicTacToeMoveGenerator{piece: Piece::X}};

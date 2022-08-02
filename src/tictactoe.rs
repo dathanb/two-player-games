@@ -60,7 +60,7 @@ pub struct TicTacToeMoveGenerator {
 
 pub struct TicTacToeOracle {}
 
-impl Oracle<TicTacToeGame, TicTacToeMove, TicTacToePlayer> for TicTacToeOracle {
+impl Oracle<TicTacToeGame, TicTacToeMove> for TicTacToeOracle {
     fn next_player(&self, game: &TicTacToeGame) -> Option<usize> {
         match game.last_player {
             0 => Some(1),

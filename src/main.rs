@@ -14,10 +14,10 @@ mod positionevaluator;
 
 fn main() {
     let player1 = TicTacToePlayer::new(
-        Box::new(MaxMoveStrategy::new(TicTacToePositionEvaluator{player_piece: Piece::X}, TicTacToeMoveGenerator{piece: Piece::X}))
+        Box::new(MaxMoveStrategy::new(TicTacToePositionEvaluator{player_piece: Piece::X}, TicTacToeMoveGenerator{piece: Piece::X}, TicTacToeOracle{}))
     );
     let player2 = TicTacToePlayer::new(
-        Box::new(MaxMoveStrategy::new(TicTacToePositionEvaluator{player_piece: Piece::O}, TicTacToeMoveGenerator{piece: Piece::O}))
+        Box::new(MaxMoveStrategy::new(TicTacToePositionEvaluator{player_piece: Piece::O}, TicTacToeMoveGenerator{piece: Piece::O}, TicTacToeOracle{}))
     );
 
     let mut engine = GameEngine::<TicTacToeGame, TicTacToeMove, TicTacToePlayer, TicTacToeOracle>::new(

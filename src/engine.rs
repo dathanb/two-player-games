@@ -8,7 +8,7 @@ pub struct GameEngine<GameType, MoveType, PlayerType, OracleType>
     where GameType: Game<GameType, MoveType> + Debug,
           MoveType: Move,
           PlayerType: Player<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType, PlayerType>
+          OracleType: Oracle<GameType, MoveType>
 {
     initial_game_state: GameType,
     moves: Vec<MoveType>,
@@ -23,7 +23,7 @@ impl<GameType, MoveType, PlayerType, OracleType> GameEngine<GameType, MoveType, 
     where GameType: Game<GameType, MoveType> + Debug,
           MoveType: Move,
           PlayerType: Player<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType, PlayerType>
+          OracleType: Oracle<GameType, MoveType>
 {
     pub fn new(initial_game_state: GameType, player1: PlayerType, player2: PlayerType, oracle: OracleType) -> GameEngine<GameType, MoveType, PlayerType, OracleType> {
         GameEngine {

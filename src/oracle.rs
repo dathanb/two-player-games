@@ -5,10 +5,9 @@ use crate::r#move::Move;
 /// An Oracle is a class that's not part of any Player impl that's capable of some reasoning about the state
 /// of a game, like who should play next, whether the game is over, and who won the game. It's consulted by
 /// the game engine to control the flow of the game.
-pub trait Oracle<GameType, MoveType, PlayerType>
+pub trait Oracle<GameType, MoveType>
     where GameType: Game<GameType, MoveType>,
-          MoveType: Move,
-          PlayerType: Player<GameType, MoveType>
+          MoveType: Move
 {
     /// Returns the index of the next player who should play, if it can be uniquely determined.
     /// If for some reason the oracle can't uniquely determine the next player (e.g., because the position is terminal),

@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use std::cmp::Ordering::Less;
 use crate::game::Game;
 use crate::r#move::Move;
 

@@ -17,10 +17,10 @@ use crate::r#move::Move;
  * The MoveStrategy works closely with the {@link MoveGenerator}, since MoveStrategy's rely on the MoveGenerator to produce the moves that should be
  * evaluated.
  */
-trait MoveStrategy<GameType, MoveType>
+pub trait MoveStrategy<GameType, MoveType>
     where GameType: Game<GameType, MoveType>,
           MoveType: Move {
-    fn choose_move(&self, game: GameType) -> MoveType;
+    fn choose_move(&self, game: &GameType) -> MoveType;
 }
 
 /// A MaxMoveStrategy always picks the move that leads to the best-encountered position for the player.
@@ -31,12 +31,27 @@ pub struct MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGenera
           MoveType: Move,
           PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
           MoveGeneratorType: MoveGenerator<GameType, MoveType>
-
 {
-    game: GameType,
+    phantom_game: PhantomData<GameType>,
     phantom_move: PhantomData<MoveType>,
     position_evaluator: PositionEvaluatorType,
     move_generator: MoveGeneratorType,
+}
+
+impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType> MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType>
+    where GameType: Game<GameType, MoveType>,
+          MoveType: Move,
+          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
+          MoveGeneratorType: MoveGenerator<GameType, MoveType>
+{
+    pub fn new(position_evaluator: PositionEvaluatorType, move_generator: MoveGeneratorType) -> MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType> {
+        MaxMoveStrategy {
+            phantom_game: PhantomData,
+            phantom_move: PhantomData,
+            position_evaluator,
+            move_generator
+        }
+    }
 }
 
 impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType> MoveStrategy<GameType, MoveType>
@@ -45,13 +60,12 @@ for MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType
           MoveType: Move,
           PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
           MoveGeneratorType: MoveGenerator<GameType, MoveType> {
-    fn choose_move(&self, game: GameType) -> MoveType {
+    fn choose_move(&self, game: &GameType) -> MoveType {
         let moves = self.move_generator.get_moves(&game);
         let mut best_move = moves[0];
-        let mut best_position_evaluation = self.position_evaluator.evaluate(&self.game.apply(&moves[0]));
+        let mut best_position_evaluation = self.position_evaluator.evaluate(&game.apply(&moves[0]));
         for r#move in moves {
-            let new_position = self.game.apply(&r#move);
-            let new_position_evaluation = self.position_evaluator.evaluate(&self.game.apply(&r#move));
+            let new_position_evaluation = self.position_evaluator.evaluate(&game.apply(&r#move));
             if new_position_evaluation > best_position_evaluation {
                 best_position_evaluation = new_position_evaluation;
                 best_move = r#move;

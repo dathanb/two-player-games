@@ -3,7 +3,6 @@ use crate::game::Game;
 use crate::oracle::Oracle;
 use crate::player::Player;
 use crate::r#move::Move;
-use crate::TicTacToeOracle;
 
 pub struct GameEngine<GameType, MoveType, PlayerType, OracleType>
     where GameType: Game<GameType, MoveType> + Debug,
@@ -46,10 +45,7 @@ impl<GameType, MoveType, PlayerType, OracleType> GameEngine<GameType, MoveType, 
                 _ => return
             };
 
-            let next_move = match next_player.pick_move(&self.current_game_state) {
-                Some(x) => x,
-                None => return
-            };
+            let next_move = next_player.pick_move(&self.current_game_state);
             self.current_game_state = self.current_game_state.apply(&next_move);
             println!("{:?}", self.current_game_state);
             self.moves.push(next_move);

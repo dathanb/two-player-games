@@ -1,5 +1,5 @@
 use crate::engine::GameEngine;
-use crate::movestrategy::MaxMoveStrategy;
+use crate::movestrategy::{MinimaxMoveStrategy};
 use crate::tictactoe::{Piece, TicTacToeGame, TicTacToeMove, TicTacToeMoveGenerator, TicTacToeOracle, TicTacToePlayer, TicTacToePositionEvaluator};
 
 mod player;
@@ -14,10 +14,10 @@ mod positionevaluator;
 
 fn main() {
     let player1 = TicTacToePlayer::new(
-        Box::new(MaxMoveStrategy::new(TicTacToePositionEvaluator{player_piece: Piece::X}, TicTacToeMoveGenerator{piece: Piece::X}, TicTacToeOracle{}))
+        Box::new(MinimaxMoveStrategy::new(TicTacToePositionEvaluator { player_piece: Piece::X }, TicTacToeMoveGenerator {}, TicTacToeOracle {}))
     );
     let player2 = TicTacToePlayer::new(
-        Box::new(MaxMoveStrategy::new(TicTacToePositionEvaluator{player_piece: Piece::O}, TicTacToeMoveGenerator{piece: Piece::O}, TicTacToeOracle{}))
+        Box::new(MinimaxMoveStrategy::new(TicTacToePositionEvaluator { player_piece: Piece::O }, TicTacToeMoveGenerator {}, TicTacToeOracle {}))
     );
 
     let mut engine = GameEngine::<TicTacToeGame, TicTacToeMove, TicTacToePlayer, TicTacToeOracle>::new(

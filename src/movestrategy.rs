@@ -68,12 +68,15 @@ impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> M
         let mut best_position_evaluation = PositionEvaluation::Losing;
         for r#move in moves {
             let new_position = &game.apply(&r#move);
-            let new_position_evaluation;
 
             let recursive = self.choose_move_recursive(new_position);
-            match recursive {
-                None => new_position_evaluation = self.position_evaluator.evaluate(new_position),
-                Some((_, recursive_evaluation)) =>  if recursive_evaluation >= best_position_evaluation { best_move = r#move }
+            let new_position_evaluation = match recursive {
+                None => self.position_evaluator.evaluate(new_position),
+                Some((_, recursive_evaluation)) =>  recursive_evaluation
+            };
+            if new_position_evaluation > best_position_evaluation {
+                best_position_evaluation = new_position_evaluation;
+                best_move = r#move;
             }
         }
         Some((best_move, best_position_evaluation))
@@ -89,6 +92,83 @@ for MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType
           OracleType: Oracle<GameType, MoveType> {
     fn choose_move(&self, game: &GameType) -> MoveType {
         match self.choose_move_recursive(game) {
+            Some((best_move, _)) => best_move,
+            None => panic!("Expected to be able to make a move!")
+        }
+    }
+}
+
+/// A MinimaxMoveStrategy always picks the move that maximizes the worst case scenario for the player.
+///
+/// Put another way, it assumes that the opponent will always pick the best move for them, and it picks the best move
+/// it can under that assumption.
+pub struct MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where GameType: Game<GameType, MoveType>,
+          MoveType: Move,
+          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
+          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
+          OracleType: Oracle<GameType, MoveType>
+{
+    phantom_game: PhantomData<GameType>,
+    phantom_move: PhantomData<MoveType>,
+    position_evaluator: PositionEvaluatorType,
+    move_generator: MoveGeneratorType,
+    oracle: OracleType
+}
+
+impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where GameType: Game<GameType, MoveType>,
+          MoveType: Move,
+          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
+          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
+          OracleType: Oracle<GameType, MoveType>
+{
+    pub fn new(position_evaluator: PositionEvaluatorType, move_generator: MoveGeneratorType, oracle: OracleType) -> MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> {
+        MinimaxMoveStrategy {
+            phantom_game: PhantomData,
+            phantom_move: PhantomData,
+            position_evaluator,
+            move_generator,
+            oracle
+        }
+    }
+
+    fn choose_move_recursive(&self, game: &GameType, maximizing_player: bool) -> Option<(MoveType, PositionEvaluation)> {
+        if self.oracle.is_terminal(game) {
+            return None;
+        }
+
+        let moves = self.move_generator.get_moves(&game);
+        let mut best_move = moves[0];
+        let mut best_position_evaluation = match maximizing_player { true => PositionEvaluation::Losing, false => PositionEvaluation::Winning };
+        for r#move in moves {
+            let new_position = &game.apply(&r#move);
+            let recursive = self.choose_move_recursive(new_position, !maximizing_player);
+            let new_position_evaluation = match recursive {
+                None => self.position_evaluator.evaluate(new_position),
+                Some((_, recursive_evaluation)) => recursive_evaluation
+            };
+            if maximizing_player && new_position_evaluation > best_position_evaluation {
+                best_position_evaluation = new_position_evaluation;
+                best_move = r#move;
+            } else if !maximizing_player && new_position_evaluation < best_position_evaluation {
+                best_position_evaluation = new_position_evaluation;
+                best_move = r#move;
+            }
+        }
+        Some((best_move, best_position_evaluation))
+    }
+}
+
+impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MoveStrategy<GameType, MoveType>
+for MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where GameType: Game<GameType, MoveType>,
+          MoveType: Move,
+          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
+          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
+          OracleType: Oracle<GameType, MoveType> {
+    fn choose_move(&self, game: &GameType) -> MoveType {
+        match self.choose_move_recursive(game, true) {
             Some((best_move, _)) => best_move,
             None => panic!("Expected to be able to make a move!")
         }

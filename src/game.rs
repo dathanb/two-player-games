@@ -1,8 +1,9 @@
+use std::fmt::Debug;
 
 /**
 Represents the state of a game at any point in time.
 */
-pub trait Game<GameType, MoveType>: Copy {
+pub trait Game<GameType, MoveType>: Copy + Debug {
     // public interface Game<GameType extends Game<GameType, MoveType>, MoveType extends Move> {
     /**
      * Compose the given move with the current game state, returning a new game state.
@@ -11,5 +12,4 @@ pub trait Game<GameType, MoveType>: Copy {
      */
     // GameType apply(MoveType move);
     fn apply(&self, m: &MoveType) -> GameType;
-
 }

@@ -5,6 +5,7 @@ use crate::r#move::Move;
 /// An evaluation of a game position. For sophisticated position evaluators and strategies, this should incorporate
 /// any information discovered about positions reachable from the current position, especially positions that can be
 /// forced by any player.
+#[derive(Debug)]
 pub enum PositionEvaluation {
     /// Winning indicates that the game position leads to a forced win for the current player if the player
     /// plays perfectly.

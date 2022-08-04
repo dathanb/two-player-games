@@ -27,7 +27,7 @@ impl Game<TicTacToeGame, TicTacToeMove> for TicTacToeGame {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct TicTacToeMove {
     pub position: usize,
     pub piece: Piece,
@@ -52,10 +52,6 @@ impl Player<TicTacToeGame, TicTacToeMove> for TicTacToePlayer {
     fn pick_move(&self, game: &TicTacToeGame) -> TicTacToeMove {
         self.move_strategy.choose_move(game)
     }
-}
-
-pub struct TicTacToeMoveGenerator {
-    pub piece: Piece,
 }
 
 pub struct TicTacToeOracle {}
@@ -100,12 +96,19 @@ impl Oracle<TicTacToeGame, TicTacToeMove> for TicTacToeOracle {
     }
 }
 
+pub struct TicTacToeMoveGenerator {
+}
+
 impl MoveGenerator<TicTacToeGame, TicTacToeMove> for TicTacToeMoveGenerator {
     fn get_moves(&self, game: &TicTacToeGame) -> Vec<TicTacToeMove> {
+        let piece = match game.last_player {
+            0 => Piece::O,
+            _ => Piece::X
+        };
         let mut moves = vec!();
         for i in 0..9 {
             match game.board[i] {
-                None => moves.push(TicTacToeMove { position: i, piece: self.piece }),
+                None => moves.push(TicTacToeMove { position: i, piece }),
                 _ => ()
             }
         }

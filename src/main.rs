@@ -1,16 +1,9 @@
-use crate::engine::GameEngine;
-use crate::movestrategy::{MinimaxMoveStrategy};
+use crate::core::engine::GameEngine;
+use crate::core::move_strategy::MinimaxMoveStrategy;
 use crate::tictactoe::{Piece, TicTacToeGame, TicTacToeMove, TicTacToeMoveGenerator, TicTacToeOracle, TicTacToePlayer, TicTacToePositionEvaluator};
 
-mod player;
-mod r#move;
-mod movegenerator;
-mod engine;
-mod game;
 mod tictactoe;
-mod oracle;
-mod movestrategy;
-mod positionevaluator;
+mod core;
 
 fn main() {
     let player1 = TicTacToePlayer::new(

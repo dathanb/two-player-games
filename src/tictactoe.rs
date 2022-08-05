@@ -1,10 +1,8 @@
-use crate::game::Game;
-use crate::movegenerator::MoveGenerator;
-use crate::movestrategy::MoveStrategy;
-use crate::oracle::Oracle;
-use crate::player::Player;
-use crate::positionevaluator::{PositionEvaluation, PositionEvaluator};
-use crate::r#move::Move;
+use crate::core::game::{Game, Oracle};
+use crate::core::move_strategy::MoveStrategy;
+use crate::core::player::Player;
+use crate::core::position_evaluator::{PositionEvaluation, PositionEvaluator};
+use crate::r#core::r#move::{Move,MoveGenerator};
 
 #[derive(Copy, Clone, Debug)]
 pub struct TicTacToeGame {
@@ -96,8 +94,7 @@ impl Oracle<TicTacToeGame, TicTacToeMove> for TicTacToeOracle {
     }
 }
 
-pub struct TicTacToeMoveGenerator {
-}
+pub struct TicTacToeMoveGenerator {}
 
 impl MoveGenerator<TicTacToeGame, TicTacToeMove> for TicTacToeMoveGenerator {
     fn get_moves(&self, game: &TicTacToeGame) -> Vec<TicTacToeMove> {

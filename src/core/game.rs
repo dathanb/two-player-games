@@ -1,5 +1,20 @@
-use crate::game::Game;
-use crate::r#move::Move;
+use std::fmt::Debug;
+
+use crate::core::r#move::Move;
+
+/**
+Represents the state of a game at any point in time.
+*/
+pub trait Game<GameType, MoveType>: Copy + Debug {
+    // public interface Game<GameType extends Game<GameType, MoveType>, MoveType extends Move> {
+    /**
+     * Compose the given move with the current game state, returning a new game state.
+     * @param move The move to apply
+     * @return The new game state resulting from applying the move to the current game state.
+     */
+    // GameType apply(MoveType move);
+    fn apply(&self, m: &MoveType) -> GameType;
+}
 
 /// An Oracle is a class that's not part of any Player impl that's capable of some reasoning about the state
 /// of a game, like who should play next, whether the game is over, and who won the game. It's consulted by

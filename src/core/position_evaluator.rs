@@ -56,7 +56,7 @@ pub trait PositionEvaluator<GameType, MoveType>
 #[cfg(test)]
 mod tests {
     use std::cmp::Ordering;
-    use crate::positionevaluator::PositionEvaluation;
+    use crate::core::position_evaluator::PositionEvaluation;
 
     #[test]
     pub fn test_partial_ord_for_position_evaluation() {

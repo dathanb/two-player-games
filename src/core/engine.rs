@@ -1,30 +1,30 @@
 use std::fmt::Debug;
-use crate::core::game::{Game, Oracle};
+use crate::core::game::{Position, Oracle};
 use crate::core::player::Player;
 use crate::core::r#move::Move;
 
-pub struct GameEngine<GameType, MoveType, PlayerType, OracleType>
-    where GameType: Game<GameType, MoveType> + Debug,
+pub struct GameEngine<PositionType, MoveType, PlayerType, OracleType>
+    where PositionType: Position<PositionType, MoveType> + Debug,
           MoveType: Move,
-          PlayerType: Player<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType>
+          PlayerType: Player<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType>
 {
-    initial_game_state: GameType,
+    initial_game_state: PositionType,
     moves: Vec<MoveType>,
-    current_game_state: GameType,
+    current_game_state: PositionType,
     // TODO: We maybe don't want to own these.
     player_x: PlayerType,
     player_o: PlayerType,
     oracle: OracleType
 }
 
-impl<GameType, MoveType, PlayerType, OracleType> GameEngine<GameType, MoveType, PlayerType, OracleType>
-    where GameType: Game<GameType, MoveType> + Debug,
+impl<PositionType, MoveType, PlayerType, OracleType> GameEngine<PositionType, MoveType, PlayerType, OracleType>
+    where PositionType: Position<PositionType, MoveType> + Debug,
           MoveType: Move,
-          PlayerType: Player<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType>
+          PlayerType: Player<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType>
 {
-    pub fn new(initial_game_state: GameType, player1: PlayerType, player2: PlayerType, oracle: OracleType) -> GameEngine<GameType, MoveType, PlayerType, OracleType> {
+    pub fn new(initial_game_state: PositionType, player1: PlayerType, player2: PlayerType, oracle: OracleType) -> GameEngine<PositionType, MoveType, PlayerType, OracleType> {
         GameEngine {
             initial_game_state,
             moves: vec![],

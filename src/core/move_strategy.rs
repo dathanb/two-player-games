@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use crate::core::game::{Game, Oracle};
+use crate::core::game::{Position, Oracle};
 use crate::core::position_evaluator::{PositionEvaluation, PositionEvaluator};
 use crate::core::r#move::{Move, MoveGenerator};
 
@@ -16,37 +16,37 @@ use crate::core::r#move::{Move, MoveGenerator};
  * The MoveStrategy works closely with the {@link MoveGenerator}, since MoveStrategy's rely on the MoveGenerator to produce the moves that should be
  * evaluated.
  */
-pub trait MoveStrategy<GameType, MoveType>
-    where GameType: Game<GameType, MoveType>,
+pub trait MoveStrategy<PositionType, MoveType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move {
-    fn choose_move(&self, game: &GameType) -> MoveType;
+    fn choose_move(&self, game: &PositionType) -> MoveType;
 }
 
 /// A MaxMoveStrategy always picks the move that leads to the best-encountered position for the player.
 /// It's not a very good strategy, because it might also permit the opponent to force a terrible position for the player.
 /// But it's a good starter strategy for building out the game APIs without getting bogged down in algorithms like minimax.
-pub struct MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+pub struct MaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move,
-          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
-          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType>
+          PositionEvaluatorType: PositionEvaluator<PositionType, MoveType>,
+          MoveGeneratorType: MoveGenerator<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType>
 {
-    phantom_game: PhantomData<GameType>,
+    phantom_game: PhantomData<PositionType>,
     phantom_move: PhantomData<MoveType>,
     position_evaluator: PositionEvaluatorType,
     move_generator: MoveGeneratorType,
     oracle: OracleType
 }
 
-impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+impl<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move,
-          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
-          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType>
+          PositionEvaluatorType: PositionEvaluator<PositionType, MoveType>,
+          MoveGeneratorType: MoveGenerator<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType>
 {
-    pub fn new(position_evaluator: PositionEvaluatorType, move_generator: MoveGeneratorType, oracle: OracleType) -> MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> {
+    pub fn new(position_evaluator: PositionEvaluatorType, move_generator: MoveGeneratorType, oracle: OracleType) -> MaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> {
         MaxMoveStrategy {
             phantom_game: PhantomData,
             phantom_move: PhantomData,
@@ -56,7 +56,7 @@ impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> M
         }
     }
 
-    fn choose_move_recursive(&self, game: &GameType) -> Option<(MoveType, PositionEvaluation)> {
+    fn choose_move_recursive(&self, game: &PositionType) -> Option<(MoveType, PositionEvaluation)> {
         if self.oracle.is_terminal(game) {
             return None;
         }
@@ -81,14 +81,14 @@ impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> M
     }
 }
 
-impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MoveStrategy<GameType, MoveType>
-for MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+impl<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MoveStrategy<PositionType, MoveType>
+for MaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move,
-          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
-          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType> {
-    fn choose_move(&self, game: &GameType) -> MoveType {
+          PositionEvaluatorType: PositionEvaluator<PositionType, MoveType>,
+          MoveGeneratorType: MoveGenerator<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType> {
+    fn choose_move(&self, game: &PositionType) -> MoveType {
         match self.choose_move_recursive(game) {
             Some((best_move, _)) => best_move,
             None => panic!("Expected to be able to make a move!")
@@ -100,28 +100,28 @@ for MaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType
 ///
 /// Put another way, it assumes that the opponent will always pick the best move for them, and it picks the best move
 /// it can under that assumption.
-pub struct MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+pub struct MinimaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move,
-          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
-          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType>
+          PositionEvaluatorType: PositionEvaluator<PositionType, MoveType>,
+          MoveGeneratorType: MoveGenerator<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType>
 {
-    phantom_game: PhantomData<GameType>,
+    phantom_game: PhantomData<PositionType>,
     phantom_move: PhantomData<MoveType>,
     position_evaluator: PositionEvaluatorType,
     move_generator: MoveGeneratorType,
     oracle: OracleType
 }
 
-impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+impl<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MinimaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move,
-          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
-          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType>
+          PositionEvaluatorType: PositionEvaluator<PositionType, MoveType>,
+          MoveGeneratorType: MoveGenerator<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType>
 {
-    pub fn new(position_evaluator: PositionEvaluatorType, move_generator: MoveGeneratorType, oracle: OracleType) -> MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> {
+    pub fn new(position_evaluator: PositionEvaluatorType, move_generator: MoveGeneratorType, oracle: OracleType) -> MinimaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> {
         MinimaxMoveStrategy {
             phantom_game: PhantomData,
             phantom_move: PhantomData,
@@ -131,7 +131,7 @@ impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> M
         }
     }
 
-    fn choose_move_recursive(&self, game: &GameType, maximizing_player: bool) -> Option<(MoveType, PositionEvaluation)> {
+    fn choose_move_recursive(&self, game: &PositionType, maximizing_player: bool) -> Option<(MoveType, PositionEvaluation)> {
         if self.oracle.is_terminal(game) {
             return None;
         }
@@ -158,14 +158,14 @@ impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> M
     }
 }
 
-impl<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MoveStrategy<GameType, MoveType>
-for MinimaxMoveStrategy<GameType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
-    where GameType: Game<GameType, MoveType>,
+impl<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType> MoveStrategy<PositionType, MoveType>
+for MinimaxMoveStrategy<PositionType, MoveType, PositionEvaluatorType, MoveGeneratorType, OracleType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move,
-          PositionEvaluatorType: PositionEvaluator<GameType, MoveType>,
-          MoveGeneratorType: MoveGenerator<GameType, MoveType>,
-          OracleType: Oracle<GameType, MoveType> {
-    fn choose_move(&self, game: &GameType) -> MoveType {
+          PositionEvaluatorType: PositionEvaluator<PositionType, MoveType>,
+          MoveGeneratorType: MoveGenerator<PositionType, MoveType>,
+          OracleType: Oracle<PositionType, MoveType> {
+    fn choose_move(&self, game: &PositionType) -> MoveType {
         match self.choose_move_recursive(game, true) {
             Some((best_move, _)) => best_move,
             None => panic!("Expected to be able to make a move!")

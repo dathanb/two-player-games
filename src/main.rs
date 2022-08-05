@@ -1,6 +1,6 @@
 use crate::core::engine::GameEngine;
 use crate::core::move_strategy::MinimaxMoveStrategy;
-use crate::connect_four::{Piece, ConnectFourGame, ConnectFourMove, ConnectFourMoveGenerator, ConnectFourOracle, ConnectFourPlayer, ConnectFourPositionEvaluator};
+use crate::connect_four::{Piece, ConnectFourPosition, ConnectFourMove, ConnectFourMoveGenerator, ConnectFourOracle, ConnectFourPlayer, ConnectFourPositionEvaluator};
 
 mod tictactoe;
 mod core;
@@ -14,8 +14,8 @@ fn main() {
         Box::new(MinimaxMoveStrategy::new(ConnectFourPositionEvaluator { player_piece: Piece::Black }, ConnectFourMoveGenerator {}, ConnectFourOracle {}))
     );
 
-    let mut engine = GameEngine::<ConnectFourGame, ConnectFourMove, ConnectFourPlayer, ConnectFourOracle>::new(
-        ConnectFourGame::new(),
+    let mut engine = GameEngine::<ConnectFourPosition, ConnectFourMove, ConnectFourPlayer, ConnectFourOracle>::new(
+        ConnectFourPosition::new(),
         player1,
         player2,
         ConnectFourOracle {});

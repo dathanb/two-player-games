@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use crate::core::game::Game;
+use crate::core::game::Position;
 use crate::core::r#move::Move;
 
 /// An evaluation of a game position. For sophisticated position evaluators and strategies, this should incorporate
@@ -44,13 +44,13 @@ impl PartialEq<Self> for PositionEvaluation {
     }
 }
 
-pub trait PositionEvaluator<GameType, MoveType>
-    where GameType: Game<GameType, MoveType>,
+pub trait PositionEvaluator<PositionType, MoveType>
+    where PositionType: Position<PositionType, MoveType>,
           MoveType: Move {
 
     /// Evaluate a position. This evaluation should incorporate only the position itself, and not attempt to
     /// analyze transitive positions.
-    fn evaluate(&self, position: &GameType) -> PositionEvaluation;
+    fn evaluate(&self, position: &PositionType) -> PositionEvaluation;
 }
 
 #[cfg(test)]

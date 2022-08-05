@@ -1,6 +1,6 @@
-use crate::core::game::Game;
+use crate::core::game::Position;
 use crate::core::r#move::Move;
 
-pub trait Player<GameType: Game<GameType, MoveType>, MoveType: Move> {
-    fn pick_move(&self, game: &GameType) -> MoveType;
+pub trait Player<PositionType: Position<PositionType, MoveType>, MoveType: Move> {
+    fn pick_move(&self, game: &PositionType) -> MoveType;
 }

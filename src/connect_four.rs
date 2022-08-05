@@ -1,4 +1,4 @@
-use crate::core::game::{Game, Oracle};
+use crate::core::game::{Position, Oracle};
 use crate::core::player::Player;
 use crate::core::position_evaluator::{PositionEvaluation, PositionEvaluator};
 use crate::core::r#move::{Move, MoveGenerator};
@@ -10,17 +10,17 @@ pub enum Piece {
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct ConnectFourGame {
+pub struct ConnectFourPosition {
 }
 
-impl ConnectFourGame {
-    pub fn new() -> ConnectFourGame {
+impl ConnectFourPosition {
+    pub fn new() -> ConnectFourPosition {
         todo!()
     }
 }
 
-impl Game<ConnectFourGame, ConnectFourMove> for ConnectFourGame {
-    fn apply(&self, m: &ConnectFourMove) -> ConnectFourGame {
+impl Position<ConnectFourPosition, ConnectFourMove> for ConnectFourPosition {
+    fn apply(&self, m: &ConnectFourMove) -> ConnectFourPosition {
         todo!()
     }
 }
@@ -36,28 +36,28 @@ pub struct ConnectFourPositionEvaluator {
     pub player_piece: Piece
 }
 
-impl PositionEvaluator<ConnectFourGame, ConnectFourMove> for ConnectFourPositionEvaluator {
-    fn evaluate(&self, position: &ConnectFourGame) -> PositionEvaluation {
+impl PositionEvaluator<ConnectFourPosition, ConnectFourMove> for ConnectFourPositionEvaluator {
+    fn evaluate(&self, position: &ConnectFourPosition) -> PositionEvaluation {
         todo!()
     }
 }
 
 pub struct ConnectFourMoveGenerator{}
 
-impl MoveGenerator<ConnectFourGame, ConnectFourMove> for ConnectFourMoveGenerator {
-    fn get_moves(&self, game: &ConnectFourGame) -> Vec<ConnectFourMove> {
+impl MoveGenerator<ConnectFourPosition, ConnectFourMove> for ConnectFourMoveGenerator {
+    fn get_moves(&self, game: &ConnectFourPosition) -> Vec<ConnectFourMove> {
         todo!()
     }
 }
 
 pub struct ConnectFourOracle{}
 
-impl Oracle<ConnectFourGame, ConnectFourMove> for ConnectFourOracle {
-    fn next_player(&self, game: &ConnectFourGame) -> Option<usize> {
+impl Oracle<ConnectFourPosition, ConnectFourMove> for ConnectFourOracle {
+    fn next_player(&self, game: &ConnectFourPosition) -> Option<usize> {
         todo!()
     }
 
-    fn is_terminal(&self, game: &ConnectFourGame) -> bool {
+    fn is_terminal(&self, game: &ConnectFourPosition) -> bool {
         todo!()
     }
 }
@@ -66,7 +66,7 @@ pub struct ConnectFourPlayer{
 }
 
 impl ConnectFourPlayer {
-    pub fn new(p0: Box<MinimaxMoveStrategy<ConnectFourGame, ConnectFourMove, ConnectFourPositionEvaluator, ConnectFourMoveGenerator, ConnectFourOracle>>) -> ConnectFourPlayer {
+    pub fn new(p0: Box<MinimaxMoveStrategy<ConnectFourPosition, ConnectFourMove, ConnectFourPositionEvaluator, ConnectFourMoveGenerator, ConnectFourOracle>>) -> ConnectFourPlayer {
         todo!()
     }
 }
@@ -75,8 +75,8 @@ impl ConnectFourPlayer {
 
 }
 
-impl Player<ConnectFourGame, ConnectFourMove> for ConnectFourPlayer {
-    fn pick_move(&self, game: &ConnectFourGame) -> ConnectFourMove {
+impl Player<ConnectFourPosition, ConnectFourMove> for ConnectFourPlayer {
+    fn pick_move(&self, game: &ConnectFourPosition) -> ConnectFourMove {
         todo!()
     }
 }

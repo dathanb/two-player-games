@@ -1,9 +1,7 @@
 use std::marker::PhantomData;
-use crate::game::Game;
-use crate::movegenerator::MoveGenerator;
-use crate::oracle::Oracle;
-use crate::positionevaluator::{PositionEvaluation, PositionEvaluator};
-use crate::r#move::Move;
+use crate::core::game::{Game, Oracle};
+use crate::core::position_evaluator::{PositionEvaluation, PositionEvaluator};
+use crate::core::r#move::{Move, MoveGenerator};
 
 /**
  * A MoveStrategy is a strategy for choosing moves (it sounds tautological, but it's true).

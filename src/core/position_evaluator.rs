@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
-use crate::game::Game;
-use crate::r#move::Move;
+use crate::core::game::Game;
+use crate::core::r#move::Move;
 
 /// An evaluation of a game position. For sophisticated position evaluators and strategies, this should incorporate
 /// any information discovered about positions reachable from the current position, especially positions that can be

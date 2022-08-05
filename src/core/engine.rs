@@ -1,8 +1,7 @@
 use std::fmt::Debug;
-use crate::game::Game;
-use crate::oracle::Oracle;
-use crate::player::Player;
-use crate::r#move::Move;
+use crate::core::game::{Game, Oracle};
+use crate::core::player::Player;
+use crate::core::r#move::Move;
 
 pub struct GameEngine<GameType, MoveType, PlayerType, OracleType>
     where GameType: Game<GameType, MoveType> + Debug,

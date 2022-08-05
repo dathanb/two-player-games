@@ -1,6 +1,4 @@
 use crate::core::game::{Position, Oracle};
-use crate::core::move_strategy::MoveStrategy;
-use crate::core::player::Player;
 use crate::core::position_evaluator::{PositionEvaluation, PositionEvaluator};
 use crate::r#core::r#move::{Move,MoveGenerator};
 
@@ -32,25 +30,6 @@ pub struct TicTacToeMove {
 }
 
 impl Move for TicTacToeMove {}
-
-// TODO: Make a generic implementation of Player, since it doesn't look like there's anything TicTacToe-specific about it
-pub struct TicTacToePlayer {
-    move_strategy: Box<dyn MoveStrategy<TicTacToePosition, TicTacToeMove>>,
-}
-
-impl TicTacToePlayer {
-    pub fn new(move_strategy: Box<dyn MoveStrategy<TicTacToePosition, TicTacToeMove>>) -> TicTacToePlayer {
-        TicTacToePlayer {
-            move_strategy
-        }
-    }
-}
-
-impl Player<TicTacToePosition, TicTacToeMove> for TicTacToePlayer {
-    fn pick_move(&self, game: &TicTacToePosition) -> TicTacToeMove {
-        self.move_strategy.choose_move(game)
-    }
-}
 
 pub struct TicTacToeOracle {}
 

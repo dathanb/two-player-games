@@ -13,8 +13,8 @@ pub struct GameEngine<PositionType, MoveType, PlayerType, OracleType>
     moves: Vec<MoveType>,
     current_game_state: PositionType,
     // TODO: We maybe don't want to own these.
-    player_x: PlayerType,
-    player_o: PlayerType,
+    player_0: PlayerType,
+    player_1: PlayerType,
     oracle: OracleType
 }
 
@@ -29,8 +29,8 @@ impl<PositionType, MoveType, PlayerType, OracleType> GameEngine<PositionType, Mo
             initial_game_state,
             moves: vec![],
             current_game_state: initial_game_state,
-            player_x: player1,
-            player_o: player2,
+            player_0: player1,
+            player_1: player2,
             oracle
         }
     }
@@ -39,8 +39,8 @@ impl<PositionType, MoveType, PlayerType, OracleType> GameEngine<PositionType, Mo
         while !self.oracle.is_terminal(&self.current_game_state) {
 
             let next_player = match self.oracle.next_player(&self.current_game_state) {
-                Some(0) => &self.player_x,
-                Some(1) => &self.player_o,
+                Some(0) => &self.player_0,
+                Some(1) => &self.player_1,
                 _ => return
             };
 

@@ -6,7 +6,8 @@ use crate::core::r#move::{Move, MoveGenerator};
 pub enum Piece {
     Red,
     Black,
-    None
+    None,
+    Phantom // a fake piece that's never used, so our Oracles aren't confused into thinking a position is terminal
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -30,6 +31,12 @@ impl ConnectFourPosition {
 impl Position<ConnectFourPosition, ConnectFourMove> for ConnectFourPosition {
     fn apply(&self, m: &ConnectFourMove) -> ConnectFourPosition {
         let mut new_position = self.clone();
+        new_position.last_player = match m.piece {
+            Piece::Red => 0,
+            _ => 1
+        };
+
+        // drop the piece into position in the chosen column
         for i in (m.column*6)..((m.column+1)*6-1) {
             if new_position.board[i+1] != Piece::None {
                 new_position.board[i] = m.piece;
@@ -99,9 +106,9 @@ impl ConnectFourPositionEvaluator {
 impl PositionEvaluator<ConnectFourPosition, ConnectFourMove> for ConnectFourPositionEvaluator {
     fn evaluate(&self, position: &ConnectFourPosition) -> PositionEvaluation {
         // detect horizontal winners
-        for col in 0..7 {
+        for col in 0..4 {
             for row in 0..6 {
-                let winner = self.get_horizontal_winner(position, row*7+col);
+                let winner = self.get_horizontal_winner(position, col*6+row);
                 if winner == self.player_piece {
                     return PositionEvaluation::Winning;
                 } else if winner != Piece::None {
@@ -113,7 +120,7 @@ impl PositionEvaluator<ConnectFourPosition, ConnectFourMove> for ConnectFourPosi
         // detect vertical winners
         for col in 0..7 {
             for row in 0..3 {
-                let winner = self.get_vertical_winner(position, row*7+col);
+                let winner = self.get_vertical_winner(position, col*6+row);
                 if winner == self.player_piece {
                     return PositionEvaluation::Winning;
                 } else if winner != Piece::None {
@@ -125,7 +132,7 @@ impl PositionEvaluator<ConnectFourPosition, ConnectFourMove> for ConnectFourPosi
         // detect down_right winners
         for col in 0..4 {
             for row in 0..3 {
-                let winner = self.get_down_right_winner(position, row*7+col);
+                let winner = self.get_down_right_winner(position, col*6+row);
                 if winner == self.player_piece {
                     return PositionEvaluation::Winning;
                 } else if winner != Piece::None {
@@ -136,9 +143,9 @@ impl PositionEvaluator<ConnectFourPosition, ConnectFourMove> for ConnectFourPosi
 
 
         // detect up_right winners
-        for col in 3..6 {
-            for row in 0..3 {
-                let winner = self.get_up_right_winner(position, row*7+col);
+        for col in 0..4 {
+            for row in 3..7 {
+                let winner = self.get_up_right_winner(position, col*6+row);
                 if winner == self.player_piece {
                     return PositionEvaluation::Winning;
                 } else if winner != Piece::None {
@@ -153,31 +160,50 @@ impl PositionEvaluator<ConnectFourPosition, ConnectFourMove> for ConnectFourPosi
 }
 
 pub struct ConnectFourMoveGenerator{
-    pub player_piece: Piece
 }
 
 impl MoveGenerator<ConnectFourPosition, ConnectFourMove> for ConnectFourMoveGenerator {
     fn get_moves(&self, position: &ConnectFourPosition) -> Vec<ConnectFourMove> {
         let mut moves = vec![];
-        for index in 0..6 {
-            if position.board[index*6] == Piece::None {
-                moves.push(ConnectFourMove{piece: self.player_piece, column: 0});
+        let next_piece = match position.last_player {
+            0 => Piece::Black, // last player was zero, so Red, so next player is Black
+            _ => Piece::Red
+        };
+        for column in 0..7 {
+            if position.board[column *6] == Piece::None {
+                moves.push(ConnectFourMove{piece: next_piece, column });
             }
-
         }
 
-        todo!()
+        moves
     }
 }
 
-pub struct ConnectFourOracle{}
+pub struct ConnectFourOracle{
+    pub position_evaluator: ConnectFourPositionEvaluator
+}
 
 impl Oracle<ConnectFourPosition, ConnectFourMove> for ConnectFourOracle {
     fn next_player(&self, position: &ConnectFourPosition) -> Option<usize> {
-        todo!()
+        match position.last_player {
+            0 => Some(1),
+            _ => Some(0)
+        }
     }
 
     fn is_terminal(&self, position: &ConnectFourPosition) -> bool {
-        todo!()
+        match self.position_evaluator.evaluate(position) {
+            PositionEvaluation::Winning | PositionEvaluation::Losing => return true,
+            _ => ()
+        };
+
+        // if nobody's winning, we still need to check for a draw game
+        for index in 0..42 {
+            if position.board[index] == Piece::None {
+                return false;
+            }
+        }
+
+        true
     }
 }

@@ -9,17 +9,23 @@ mod connect_four;
 
 fn main() {
     let player1 = DefaultPlayer::new(
-        Box::new(MinimaxMoveStrategy::new(ConnectFourPositionEvaluator { player_piece: Piece::Red }, ConnectFourMoveGenerator {player_piece: Piece::Red}, ConnectFourOracle {}))
+        Box::new(MinimaxMoveStrategy::new(ConnectFourPositionEvaluator { player_piece: Piece::Red },
+                                          ConnectFourMoveGenerator {},
+                                          ConnectFourOracle {position_evaluator: ConnectFourPositionEvaluator{player_piece: Piece::Phantom}}))
     );
     let player2 = DefaultPlayer::new(
-        Box::new(MinimaxMoveStrategy::new(ConnectFourPositionEvaluator { player_piece: Piece::Black }, ConnectFourMoveGenerator {player_piece: Piece::Black}, ConnectFourOracle {}))
+        Box::new(MinimaxMoveStrategy::new(ConnectFourPositionEvaluator { player_piece: Piece::Black },
+                                          ConnectFourMoveGenerator {},
+                                          ConnectFourOracle {position_evaluator: ConnectFourPositionEvaluator{player_piece: Piece::Phantom}}))
     );
 
     let mut engine = GameEngine::<ConnectFourPosition, ConnectFourMove, DefaultPlayer<ConnectFourPosition, ConnectFourMove>, ConnectFourOracle>::new(
         ConnectFourPosition::new(),
         player1,
         player2,
-        ConnectFourOracle {});
+        ConnectFourOracle {
+            position_evaluator: ConnectFourPositionEvaluator{player_piece: Piece::Phantom}
+        });
 
     engine.run();
 }
